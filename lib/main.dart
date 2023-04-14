@@ -16,7 +16,7 @@ void main() async {
   await Hive.openBox<Tasks>(openBox);
   Hive.registerAdapter(PersonsAdapter());
   await Hive.openBox<Persons>(openBoxPerson);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: primaryVariantColor,
   ));
   runApp(const MyApp());
@@ -35,12 +35,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
-            TextTheme(headline6: TextStyle(fontWeight: FontWeight.bold))),
+            const TextTheme(headline6: TextStyle(fontWeight: FontWeight.bold))),
         inputDecorationTheme: const InputDecorationTheme(
             labelStyle: TextStyle(color: secondaryTextColor),
             border: InputBorder.none,
             iconColor: secondaryTextColor),
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
             primary: primaryColor,
             primaryVariant: primaryVariantColor,
             background: Color(0xffF3F5F8),
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
             onSecondary: Colors.white),
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: Text('To Do List')),
+      home: const MyHomePage(title: Text('To Do List')),
     );
   }
 }
@@ -72,7 +72,7 @@ class MyHomePage extends StatelessWidget {
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => EditTaskScreen(tasks: Tasks(),)));
           },
-          label: Text("Add New Task")),
+          label: const Text("Add New Task")),
       body: SafeArea(
         child: Column(
           children: [
@@ -93,11 +93,11 @@ class MyHomePage extends StatelessWidget {
                             color: themData.colorScheme.onPrimary),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                       height: 38,
                       // color: themData.colorScheme.onPrimary,
                       decoration: BoxDecoration(
@@ -109,7 +109,7 @@ class MyHomePage extends StatelessWidget {
                               color: Colors.black.withOpacity(0.1),
                             ),
                           ]),
-                      child: MaterialTextField(
+                      child: const MaterialTextField(
                         prefixIcon: Icon(CupertinoIcons.search),
                         labelText: "Search",
                       ),
@@ -118,7 +118,7 @@ class MyHomePage extends StatelessWidget {
                 ),
               ),
               height: 110,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient:
                     LinearGradient(colors: [primaryColor, primaryVariantColor]),
               ),
@@ -128,7 +128,7 @@ class MyHomePage extends StatelessWidget {
                 valueListenable: box.listenable(),
                 builder: (BuildContext context, box, Widget? child) {
                   return ListView.builder(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                     itemCount: box.values.length,
                     itemBuilder: (BuildContext context, int index) {
                       final task = box.values.toList()[index];
@@ -188,7 +188,7 @@ class _TaskItemState extends State<TaskItem> {
     final theme = Theme.of(context);
     return Container(
       height: 84,
-      padding: EdgeInsets.only(left: 16, right: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(19),
           color: theme.colorScheme.surface,
@@ -207,7 +207,7 @@ class _TaskItemState extends State<TaskItem> {
                 });
               },
               child: MyCheckBox(widget.task.isCompleted , primaryColor)),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Text(widget.task.name,
@@ -239,7 +239,7 @@ class MyCheckBox extends StatelessWidget {
             : null,
         color: isCompleted ? color : null,
       ),
-      child: isCompleted ? Icon(CupertinoIcons.checkmark_alt) : null,
+      child: isCompleted ? const Icon(CupertinoIcons.checkmark_alt) : null,
     );
   }
 }
@@ -258,7 +258,7 @@ class PriortyCheckBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         color: color,
       ),
-      child: isCompleted ? Icon(CupertinoIcons.checkmark_alt) : null,
+      child: isCompleted ? const Icon(CupertinoIcons.checkmark_alt) : null,
     );
   }
 }
@@ -269,17 +269,17 @@ class EditPersonScreen extends StatelessWidget {
     TextEditingController _controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Person"),
+        title: const Text("Edit Person"),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         label: Row(
           children: [
-            Text("Add new person"),
-            SizedBox(
+            const Text("Add new person"),
+            const SizedBox(
               width: 5,
             ),
-            Icon(CupertinoIcons.add)
+            const Icon(CupertinoIcons.add)
           ],
         ),
         onPressed: () {
@@ -296,12 +296,12 @@ class EditPersonScreen extends StatelessWidget {
           children: [
             TextField(
               controller: _controller,
-              decoration: InputDecoration(labelText: "Enter name"),
+              decoration: const InputDecoration(labelText: "Enter name"),
             ),
             Container(
               width: 90,
               child: TextField(
-                decoration: InputDecoration(labelText: "Enter price"),
+                decoration: const InputDecoration(labelText: "Enter price"),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
@@ -327,7 +327,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     TextEditingController _controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Task"),
+        title: const Text("Add Task"),
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
@@ -341,7 +341,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               box.add(task);
             }
           },
-          label: Text("Save Changes")),
+          label: const Text("Save Changes")),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         child: Column(
@@ -354,7 +354,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     widget.tasks.priority = Priority.low;
                   });
                 },title: "Low", color: Colors.cyanAccent)),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 Flexible(flex: 1,child: PriorityButton(onTap: (){
@@ -362,7 +362,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     widget.tasks.priority = Priority.medium;
                   });
                 },title: "Medium", color: Colors.amberAccent)),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 Flexible(flex: 1,child: PriorityButton(onTap:(){
@@ -374,7 +374,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             ),
             TextField(
                 controller: _controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: "Enter task",
                     labelStyle: TextStyle(color: primaryTextColor))),
           ],
@@ -417,7 +417,7 @@ class _PriorityButtonState extends State<PriorityButton> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(widget.title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: primaryTextColor,
                 )),
             PriortyCheckBox(widget.isTrue, widget.color),

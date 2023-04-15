@@ -51,15 +51,14 @@ class MyApp extends StatelessWidget {
             onSecondary: Colors.white),
       ),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: Text('To Do List')),
+      home:  MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  final Text title;
+  final String title = "To Do List";
 
-  const MyHomePage({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +128,8 @@ class MyHomePage extends StatelessWidget {
                 builder: (BuildContext context, box, Widget? child) {
                   return ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                    itemCount: box.values.length,
+                    itemCount: box.values.length +1 ,
                     itemBuilder: (BuildContext context, int index) {
-                      final task = box.values.toList()[index];
                       if (index == 0) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,9 +155,8 @@ class MyHomePage extends StatelessWidget {
                           ],
                         );
                       } else {
-                        return TaskItem(
-                          task: task,
-                        );
+                        final Tasks task = box.values.toList()[index-1];
+                        return TaskItem(task: task);
                       }
                     },
                   );
@@ -340,6 +337,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               final Box<Tasks> box = Hive.box<Tasks>(openBox);
               box.add(task);
             }
+            Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => MyHomePage()));
           },
           label: const Text("Save Changes")),
       body: Padding(

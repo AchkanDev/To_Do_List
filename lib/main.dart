@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import "package:hive_flutter/hive_flutter.dart";
 import 'package:to_do_list/data.dart';
+
 import 'package:material_text_fields/material_text_fields.dart';
 
 const openBox = "task";
@@ -66,6 +67,8 @@ class MyHomePage extends StatelessWidget {
     final themData = Theme.of(context);
     final box = Hive.box<Tasks>(openBox);
     final boxPerson = Hive.box<Persons>(openBoxPerson);
+    final TextEditingController controller = TextEditingController();
+    final ValueNotifier<String> searchByKeyword = ValueNotifier("");
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
@@ -110,7 +113,11 @@ class MyHomePage extends StatelessWidget {
                               color: Colors.black.withOpacity(0.1),
                             ),
                           ]),
-                      child: const MaterialTextField(
+                      child:  MaterialTextField(
+                        onChanged: (value){
+                          searchByKeyword.value = controller.text;
+                        },
+                       controller: controller,
                         prefixIcon: Icon(CupertinoIcons.search),
                         labelText: "Search",
                       ),
@@ -125,50 +132,71 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ValueListenableBuilder<Box<Tasks>>(
-                valueListenable: box.listenable(),
-                builder: (BuildContext context, box, Widget? child) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                    itemCount: box.values.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == 0) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Person",
-                                      style: themData.textTheme.headline6!
-                                          .apply(fontSizeFactor: 0.9),
-                                    ),
-                                    SizedBox(width: MediaQuery.of(context).size.width/2,),
-                                    ElevatedButton(onPressed: (){
-                                      box.clear();
-                                    }, child: Text("Delete All"))
-                                  ],
-                                ),
-                                Container(
-                                  width: 70,
-                                  height: 3,
-                                  margin: const EdgeInsets.only(top: 4),
-                                  decoration: BoxDecoration(
-                                      color: primaryColor,
-                                      borderRadius: BorderRadius.circular(1.5)),
-                                ),
-                              ],
-                            )
-                          ],
-                        );
-                      } else {
-                        final Tasks task = box.values.toList()[index - 1];
-                        return TaskItem(task: task);
+              child: ValueListenableBuilder(
+                valueListenable: searchByKeyword,
+                builder: (context, value, child) {
+                  return ValueListenableBuilder<Box<Tasks>>(
+                    valueListenable: box.listenable(),
+                    builder: (BuildContext context, box, child) {
+                      final List<Tasks> items ;
+                      if(controller.text.isEmpty){
+                        items = box.values.toList();
                       }
+                      else{
+                        items = box.values.where((element) => element.name.contains(controller.text)).toList();
+                      }
+                      if(items.isNotEmpty) {
+                        return ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                          itemCount: items.length + 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index == 0) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Person",
+                                            style: themData.textTheme.headline6!
+                                                .apply(fontSizeFactor: 0.9),
+                                          ),
+                                          SizedBox(width: MediaQuery
+                                              .of(context)
+                                              .size
+                                              .width / 2,),
+                                          ElevatedButton(onPressed: () {
+                                            box.clear();
+                                          }, child: Text("Delete All"))
+                                        ],
+                                      ),
+                                      Container(
+                                        width: 70,
+                                        height: 3,
+                                        margin: const EdgeInsets.only(top: 4),
+                                        decoration: BoxDecoration(
+                                            color: primaryColor,
+                                            borderRadius: BorderRadius.circular(
+                                                1.5)),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              );
+                            } else {
+                              final Tasks task = items[index - 1];
+                              return TaskItem(task: task);
+                            }
+                          },
+                        );
+                      }else{return Center(child: Text("Empty"));}
                     },
                   );
                 },

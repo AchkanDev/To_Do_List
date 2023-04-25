@@ -36,8 +36,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        
         textTheme: GoogleFonts.poppinsTextTheme(
-            const TextTheme(headline6: TextStyle(fontWeight: FontWeight.bold))),
+             TextTheme(headline6: TextStyle(fontWeight: FontWeight.bold) , caption:TextStyle(fontWeight: FontWeight.w300 , color: Colors.grey.withOpacity(0.5)))),
         inputDecorationTheme: const InputDecorationTheme(
             labelStyle: TextStyle(color: secondaryTextColor),
             border: InputBorder.none,
@@ -89,7 +90,7 @@ class MyHomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "My Financial Account ",
+                          "To Do List",
                           style: themData.textTheme.headline6!
                               .apply(color: themData.colorScheme.onPrimary),
                         ),
@@ -168,13 +169,6 @@ class MyHomePage extends StatelessWidget {
                                             style: themData.textTheme.headline6!
                                                 .apply(fontSizeFactor: 0.9),
                                           ),
-                                          SizedBox(width: MediaQuery
-                                              .of(context)
-                                              .size
-                                              .width / 2,),
-                                          ElevatedButton(onPressed: () {
-                                            box.clear();
-                                          }, child: Text("Delete All"))
                                         ],
                                       ),
                                       Container(
@@ -187,7 +181,16 @@ class MyHomePage extends StatelessWidget {
                                                 1.5)),
                                       ),
                                     ],
-                                  )
+                                  ),
+                                  ElevatedButton(onPressed: () {
+                                    box.clear();
+                                  }, child: Row(
+                                    children: [
+                                      Text("Delete All"),
+                                      SizedBox(width: 4,),
+                                      Icon(CupertinoIcons.delete_solid , size: 18,),
+                                    ],
+                                  crossAxisAlignment: CrossAxisAlignment.center),)
                                 ],
                               );
                             } else {
@@ -277,6 +280,8 @@ class _TaskItemState extends State<TaskItem> {
                     widget.task.isCompleted ? TextDecoration.lineThrough : null,
                   )),
             ),
+            Text("Hold to delete" , style:theme.textTheme.caption?.apply(color: Colors.grey),),
+            SizedBox(width: 15,),
             Container(
               height: 84,
               width: 8,
@@ -380,9 +385,10 @@ class EditTaskScreen extends StatefulWidget {
 }
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
+  late final TextEditingController _controller = TextEditingController(text: widget.tasks.name);
+
   @override
   Widget build(BuildContext context) {
-    late final TextEditingController _controller = TextEditingController(text: widget.tasks.name);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Task"),
@@ -397,8 +403,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               final Box<Tasks> box = Hive.box<Tasks>(openBox);
               box.add(widget.tasks);
             }
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyHomePage()));
+            Navigator.of(context).pop();
           },
           label: const Text("Save Changes")),
       body: Padding(
@@ -455,33 +460,41 @@ class PriorityButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(
-            color: secondaryTextColor.withOpacity(0.2), width: 1),
-      ),
-      height: 40,
-      child: InkWell(
-        onTap: onTap,
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+              color: secondaryTextColor.withOpacity(0.2), width: 1),
+        ),
+        height: 40,
+        child: Stack(
             children: [
-            Text(title,
-            style: const TextStyle(
-              color: primaryTextColor,
-            )),
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: color,
+            Center(
+              child: Text(title,
+              style: const TextStyle(
+                color: primaryTextColor,
+              )),
+            ),
+        Positioned(
+          top: 0,
+          right: 8,
+          bottom: 0,
+          child: Center(
+            child: Container(
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: color,
+              ),
+              child: isSelected ? const Icon(CupertinoIcons.checkmark_alt , size: 12,) : null,
+            ),
           ),
-          child: isSelected ? const Icon(CupertinoIcons.checkmark_alt) : null,
         ),
         ],
-      ),
-    ),);
+        ),),
+    );
   }
 }

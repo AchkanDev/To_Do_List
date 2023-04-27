@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_text_fields/material_text_fields.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_list/data/repo/Repository.dart';
 
-import '../data/data.dart';
-import '../main.dart';
-import '../widgets.dart';
-import 'edit.dart';
+import '../../data/data.dart';
+import '../../main.dart';
+import '../../widgets.dart';
+import '../edit/edit.dart';
 
 class MyHomePage extends StatelessWidget {
   final String title = "To Do List";
@@ -16,8 +18,6 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themData = Theme.of(context);
-    final box = Hive.box<Tasks>(openBox);
-    final boxPerson = Hive.box<Persons>(openBoxPerson);
     final TextEditingController controller = TextEditingController();
     final ValueNotifier<String> searchByKeyword = ValueNotifier("");
     return Scaffold(
@@ -86,73 +86,29 @@ class MyHomePage extends StatelessWidget {
               child: ValueListenableBuilder(
                 valueListenable: searchByKeyword,
                 builder: (context, value, child) {
-                  return ValueListenableBuilder<Box<Tasks>>(
-                    valueListenable: box.listenable(),
-                    builder: (BuildContext context, box, child) {
-                      final List<Tasks> items ;
-                      if(controller.text.isEmpty){
-                        items = box.values.toList();
-                      }
-                      else{
-                        items = box.values.where((element) => element.name.contains(controller.text)).toList();
-                      }
-                      if(items.isNotEmpty) {
-                        return ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                          itemCount: items.length + 1,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index == 0) {
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: [
-                                          Text(
-                                            "Person",
-                                            style: themData.textTheme.headline6!
-                                                .apply(fontSizeFactor: 0.9),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        width: 70,
-                                        height: 3,
-                                        margin: const EdgeInsets.only(top: 4),
-                                        decoration: BoxDecoration(
-                                            color: primaryColor,
-                                            borderRadius: BorderRadius.circular(
-                                                1.5)),
-                                      ),
-                                    ],
-                                  ),
-                                  ElevatedButton(onPressed: () {
-                                    box.clear();
-                                  }, child: Row(
-                                      children: [
-                                        Text("Delete All"),
-                                        SizedBox(width: 4,),
-                                        Icon(CupertinoIcons.delete_solid , size: 18,),
-                                      ],
-                                      crossAxisAlignment: CrossAxisAlignment.center),)
-                                ],
-                              );
-                            } else {
-                              final Tasks task = items[index - 1];
-                              return TaskItem(task: task);
+                  return Consumer<Repository<Tasks>>(
+                    builder: (context, repo, child){
+                      return FutureBuilder<List<Tasks>>(
+                        future: repo.getAll(serachKeyWord: controller.text),
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            if(snapshot.data!.isNotEmpty){
+                              return TaskList(items: snapshot.data!, themData: themData);
+                            }else{
+                              return Center(child: Text("Empty"));
                             }
-                          },
-                        );
-                      }else{return Center(child: Text("Empty"));}
+                          }
+                          else{
+                            return const CircularProgressIndicator();
+                          }
+                        },
+                      );
+
                     },
+
                   );
-                },
+
+                    },
               ),
             ),
           ],
@@ -160,6 +116,69 @@ class MyHomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class TaskList extends StatelessWidget{
+  List <Tasks> items ;
+  final themData ;
+  TaskList ({required this.items , required this.themData});
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      itemCount: items.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == 0) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment
+                .spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .spaceBetween,
+                    children: [
+                      Text(
+                        "Person",
+                        style: themData.textTheme.headline6!
+                            .apply(fontSizeFactor: 0.9),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    width: 70,
+                    height: 3,
+                    margin: const EdgeInsets.only(top: 4),
+                    decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(
+                            1.5)),
+                  ),
+                ],
+              ),
+              ElevatedButton(onPressed: () {
+                final repo = Provider.of<Repository<Tasks>>(context , listen: false);
+                repo.deleteAll();
+              }, child: Row(
+                  children: [
+                    Text("Delete All"),
+                    SizedBox(width: 4,),
+                    Icon(CupertinoIcons.delete_solid , size: 18,),
+                  ],
+                  crossAxisAlignment: CrossAxisAlignment.center),)
+            ],
+          );
+        } else {
+          final Tasks task = items[index - 1];
+          return TaskItem(task: task);
+        }
+      },
+    );
+  }
+
 }
 
 class TaskItem extends StatefulWidget {
@@ -191,7 +210,8 @@ class _TaskItemState extends State<TaskItem> {
     }
     return InkWell(
       onLongPress: (){
-        widget.task.delete();
+        final repo = Provider.of<Repository<Tasks>>(context , listen: false);
+        repo.delete(widget.task);
       },
       onTap: (){
         setState(() {

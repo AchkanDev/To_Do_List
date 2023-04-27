@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_list/data/repo/Repository.dart';
 
-import '../data/data.dart';
-import '../main.dart';
-import '../widgets.dart';
+import '../../data/data.dart';
+import '../../main.dart';
+import '../../widgets.dart';
 
 class EditTaskScreen extends StatefulWidget {
   final Tasks tasks;
@@ -13,6 +15,7 @@ class EditTaskScreen extends StatefulWidget {
   @override
   State<EditTaskScreen> createState() => _EditTaskScreenState();
 }
+
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
   late final TextEditingController _controller = TextEditingController(text: widget.tasks.name);
@@ -27,12 +30,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           onPressed: () {
             widget.tasks.name = _controller.text;
             widget.tasks.priority = widget.tasks.priority;
-            if (widget.tasks.isInBox) {
-              widget.tasks.save();
-            } else {
-              final Box<Tasks> box = Hive.box<Tasks>(openBox);
-              box.add(widget.tasks);
-            }
+              final repo = Provider.of<Repository<Tasks>>(context , listen: false);
+              repo.createOrUpdate(widget.tasks);
+
             Navigator.of(context).pop();
           },
           label: const Text("Save Changes")),

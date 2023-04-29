@@ -7,7 +7,7 @@ class MyCheckBox extends StatelessWidget {
   final bool isCompleted;
   final GestureTapCallback onTap;
 
-  MyCheckBox({required this.isCompleted,required this.onTap});
+  MyCheckBox({required this.isCompleted, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +29,16 @@ class MyCheckBox extends StatelessWidget {
   }
 }
 
+class EmptyState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [Icon(CupertinoIcons.book_circle_fill), Text("Task is Empty")],
+    );
+  }
+}
 
 class PriorityButton extends StatelessWidget {
   final GestureTapCallback onTap;
@@ -37,8 +47,12 @@ class PriorityButton extends StatelessWidget {
   bool isSelected;
 
   PriorityButton(
-      {Key? key, required this.onTap, required this.title, required this.color , required this.isSelected })
-      :super(key: key);
+      {Key? key,
+      required this.onTap,
+      required this.title,
+      required this.color,
+      required this.isSelected})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +61,8 @@ class PriorityButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-              color: secondaryTextColor.withOpacity(0.2), width: 1),
+          border:
+              Border.all(color: secondaryTextColor.withOpacity(0.2), width: 1),
         ),
         height: 40,
         child: Stack(
@@ -71,12 +85,18 @@ class PriorityButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     color: color,
                   ),
-                  child: isSelected ? const Icon(CupertinoIcons.checkmark_alt , size: 12,) : null,
+                  child: isSelected
+                      ? const Icon(
+                          CupertinoIcons.checkmark_alt,
+                          size: 12,
+                        )
+                      : null,
                 ),
               ),
             ),
           ],
-        ),),
+        ),
+      ),
     );
   }
 }

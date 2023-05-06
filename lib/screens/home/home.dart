@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_text_fields/material_text_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_list/data/repo/Repository.dart';
+import 'package:to_do_list/screens/edit/cubit/edittask_screen_cubit.dart';
 import 'package:to_do_list/screens/home/bloc/task_list_bloc.dart';
 
 import '../../data/data.dart';
@@ -25,8 +26,10 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => EditTaskScreen(
-                      tasks: Tasks(),
+                builder: (context) => BlocProvider<EdittaskScreenCubit>(
+                      create: (context) => EdittaskScreenCubit(
+                          Tasks(), context.read<Repository<Tasks>>()),
+                      child: const EditTaskScreen(),
                     )));
           },
           label: const Text("Add New Task")),
@@ -221,7 +224,10 @@ class _TaskItemState extends State<TaskItem> {
       onTap: () {
         setState(() {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => EditTaskScreen(tasks: widget.task)));
+              builder: (context) => BlocProvider(
+                  create: (context) => EdittaskScreenCubit(
+                      widget.task, context.read<Repository<Tasks>>()),
+                  child: const EditTaskScreen())));
         });
       },
       child: Container(

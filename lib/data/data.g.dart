@@ -40,9 +40,9 @@ class TasksAdapter extends TypeAdapter<Tasks> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TasksAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is TasksAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class PersonsAdapter extends TypeAdapter<Persons> {
@@ -79,9 +79,9 @@ class PersonsAdapter extends TypeAdapter<Persons> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PersonsAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is PersonsAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class PriorityAdapter extends TypeAdapter<Priority> {
@@ -123,7 +123,7 @@ class PriorityAdapter extends TypeAdapter<Priority> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PriorityAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is PriorityAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }

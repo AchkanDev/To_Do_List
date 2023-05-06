@@ -38,6 +38,8 @@ dependencies:
   hive_flutter: ^1.1.0
   google_fonts: ^4.0.3
   material_text_fields: ^1.0.3
+  provider: ^6.0.5
+  flutter_bloc: ^8.1.2
 
 
 dev_dependencies:
